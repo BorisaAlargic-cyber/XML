@@ -167,5 +167,99 @@ namespace XML.Service
                 return new List<PostTag>();
             }
         }
+
+        public List<Post> SearchPostByLocation(string Name)
+        {
+            try
+            {
+                using (UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    List<Post> posts = unitOfWork.Posts.GetPostWithLocation(Name);
+
+                    if (posts == null)
+                    {
+                        return  new List<Post>();
+                    }
+
+                    return posts;
+
+                }
+            }catch(Exception ee)
+            {
+                return new List<Post>();
+            }
+        }
+
+        public Reaction Like(int userId,int postId)
+        {
+            try
+            {
+                using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    Reaction reaction = new Reaction();
+
+                    reaction.User = unitOfWork.Users.Get(userId);
+                    reaction.Post = unitOfWork.Posts.Get(postId);
+                    reaction.ReactionType = ReactionType.Like;
+
+                    unitOfWork.Reactions.Update(reaction);
+                    unitOfWork.Complete();
+
+                    return reaction;
+                }
+            }catch(Exception e)
+            {
+                return null;
+            }
+        }
+        public Reaction Dislike(int userId,int postId)
+        {
+            try
+            {
+                using (UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    Reaction reaction = new Reaction();
+
+                    reaction.User = unitOfWork.Users.Get(userId);
+                    reaction.Post = unitOfWork.Posts.Get(postId);
+                    reaction.ReactionType = ReactionType.Dislike;
+
+                    unitOfWork.Reactions.Update(reaction);
+                    unitOfWork.Complete();
+
+                    return reaction;
+                }
+            }catch(Exception e)
+            {
+                return null;
+            }
+        }
+
+        public PostComment Comment(AddCommentToPostRequest addCommentToPostRequest,User currentUser)
+        {
+            try
+            {
+                using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    Post post = unitOfWork.Posts.Get(addCommentToPostRequest.id);
+
+
+                    PostComment postComment = new PostComment();
+                    
+
+                    postComment.User = currentUser;
+                    postComment.Post = post;
+                    postComment.Comment = addCommentToPostRequest.Comment;
+
+                    unitOfWork.PostComments.Update(postComment);
+                    unitOfWork.Complete();
+
+                    return postComment;
+                }
+            }catch(Exception e)
+            {
+                return null;
+            }
+        }
     }
 }

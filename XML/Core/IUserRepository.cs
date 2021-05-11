@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using XML.Model;
 
 namespace XML.Core
@@ -9,5 +10,7 @@ namespace XML.Core
         public User GetUserWithEmail(string email);
 
         public User GetUserWithEmailAndPassword(string email, string password);
+
+        public List<User> GetPublicProfiles(string search);
     }
 }

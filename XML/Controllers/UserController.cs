@@ -33,6 +33,14 @@ namespace XML.Controllers
             return Ok(user);
         }
 
+        [Authorize]
+        [HttpGet]
+        [Route("/api/users/search-public/{search}")]
+        public async Task<IActionResult> SearchPublic(string search)
+        {
+            return Ok(service.GetPublicProfiles(search));
+        }
+
         [HttpPost]
         [Route("/api/users")]
         public async Task<IActionResult> Register(User userData)

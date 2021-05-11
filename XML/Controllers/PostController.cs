@@ -95,6 +95,54 @@ namespace XML.Controllers
             return Ok(post);
         }
 
+        [Authorize]
+        [HttpPut]
+        [Route("/api/posts/like/{userId}/{postId}")]
+        public async Task<IActionResult> LikePost(int postId,int userId)
+        {
+            Reaction reaction = service.Like(userId, postId);
+
+            if(reaction == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(reaction);
+        }
+        [Authorize]
+        [HttpPut]
+        [Route("/api/posts/like/{userId}/{postId}")]
+        public async Task<IActionResult> DislikePost(int postId, int userId)
+        {
+            Reaction reaction = service.Like(userId, postId);
+
+            if (reaction == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(reaction);
+        }
+
+        [Authorize]
+        [HttpPut]
+        [Route("/api/posts/comment/id")]
+        public async Task<IActionResult> Comment(AddCommentToPostRequest addCommentToPostRequest ,User currentUser)
+        {
+            currentUser = GetCurrentUser();
+
+            PostComment postComment = service.Comment(addCommentToPostRequest, currentUser);
+
+            if(postComment == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(postComment);
+        }
+
+
+
 
     }
 }

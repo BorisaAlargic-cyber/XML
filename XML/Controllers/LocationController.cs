@@ -10,27 +10,28 @@ namespace XML.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class HashtagController : DefaultController
+    public class LocationController : DefaultController
     {
-        HashtagService service = new HashtagService();
+        LocationService service = new LocationService();
 
-        public HashtagController(IConfiguration config) : base(config)
+        public LocationController(IConfiguration config) : base(config)
         {
         }
 
+
         [Authorize]
         [HttpPost]
-        [Route("/api/hashtags")]
-        public async Task<IActionResult> CreateHashtag(string Name)
+        [Route("/api/locations")]
+        public async Task<IActionResult> CreatedLocation(string Name)
         {
-            Hashtag tag = service.CreateHashtag(Name);
+            Location location = service.CreateLocation(Name);
 
-            if (tag == null)
+            if (location == null)
             {
                 return BadRequest();
             }
 
-            return Ok(tag);
+            return Ok(location);
         }
     }
 }

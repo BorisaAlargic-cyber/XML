@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using XML.Model;
 using XML.Repository;
 
@@ -44,6 +45,21 @@ namespace XML.Service
             catch (Exception ex)
             {
                 return null;
+            }
+        }
+
+        public List<User> GetPublicProfiles(string search)
+        {
+            try
+            {
+                using (UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    return unitOfWork.Users.GetPublicProfiles(search);
+                }
+            }
+            catch (Exception e)
+            {
+                return new List<User>();
             }
         }
     }
