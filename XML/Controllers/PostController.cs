@@ -111,7 +111,7 @@ namespace XML.Controllers
         }
         [Authorize]
         [HttpPut]
-        [Route("/api/posts/like/{userId}/{postId}")]
+        [Route("/api/posts/dislike/{userId}/{postId}")]
         public async Task<IActionResult> DislikePost(int postId, int userId)
         {
             Reaction reaction = service.Like(userId, postId);
@@ -141,8 +141,54 @@ namespace XML.Controllers
             return Ok(postComment);
         }
 
+        [Authorize]
+        [HttpPut]
+        [Route("/api/posts/favourit/{id}")]
+        public async Task<IActionResult> AddToFavorites(User currentUser,int id)
+        {
+            currentUser = GetCurrentUser();
 
+            Favorites favorites = service.AddToFavorites(currentUser, id);
 
+            if(favorites == null)
+            {
+                return BadRequest();
+            }
 
+            return Ok(favorites);
+        }
+
+        [Authorize]
+        [HttpPut]
+        [Route("/api/posts/unfavorit/{postId}/{favId}")]
+        public async Task<IActionResult> RemoveFromFavorites(User currentUser,int postId,int favId)
+        {
+            currentUser = GetCurrentUser();
+
+            Favorites favorites = service.RemoveFromFavorites(currentUser, postId,favId);
+
+            if (favorites == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(favorites);
+        }
+
+        [Authorize]
+        [HttpPut]
+        [Route("/api/posts/collection/{postId}/{favId}")]
+        public async Task<IActionResult> CreateCollection(AddNameToPostCollectionRequest addNameToPostCollectionRequest, User currentUser)
+        {
+            currentUser = GetCurrentUser();
+
+            PostCollection postCollection = service.CreateCollection(addNameToPostCollectionRequest, currentUser);
+
+            if(postCollection == null)
+            {
+                return BadRequest();
+            }
+            return Ok(postCollection);
+        }
     }
 }

@@ -62,5 +62,81 @@ namespace XML.Service
                 return new List<User>();
             }
         }
+
+        public CloseFriends AddToCloseFriends(User currentUser,int closeFriendId)
+        {
+            try
+            {
+                using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    CloseFriends closeFriends = new CloseFriends();
+                    User user = unitOfWork.Users.Get(closeFriendId);
+
+                    closeFriends.Owner = currentUser;
+                    closeFriends.CloseFriend = user;
+                    closeFriends.IsCloseFriend = true;
+
+                    unitOfWork.CloseFriends.Update(closeFriends);
+                    unitOfWork.Complete();
+
+                    return closeFriends;
+                }
+            }
+            catch(Exception e)
+            {
+                return null;
+            }
+        }
+
+        public CloseFriends RemoveFromCloseFriends(int FriendId , int closeFriendId)
+        {
+            try
+            {
+                using (UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    CloseFriends closeFriends = unitOfWork.CloseFriends.Get(closeFriendId);
+
+                    closeFriends.IsCloseFriend = false;
+
+                    unitOfWork.CloseFriends.Update(closeFriends);
+                    unitOfWork.Complete();
+
+                    return closeFriends;
+                }
+            }
+            catch(Exception e)
+            {
+                return null;
+            }
+        }
+
+        public User EditProfile(User user)
+        {
+            try
+            {
+                using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    User dbUser = unitOfWork.Users.GetUserWithEmail(user.Email);
+
+                    dbUser.Email = user.Email;
+                    dbUser.FirstName = user.FirstName;
+                    dbUser.LastName = user.LastName;
+                    dbUser.Gender = user.Gender;
+                    dbUser.PhoneNumber = user.PhoneNumber;
+                    dbUser.WebSite = user.WebSite;
+                    dbUser.PhoneNumber = user.PhoneNumber;
+                    dbUser.dateOfBirth = user.dateOfBirth;
+                    dbUser.IsPrivate = user.IsPrivate;
+
+                    unitOfWork.Users.Update(dbUser);
+                    unitOfWork.Complete();
+
+                    return dbUser;
+                }
+            }catch(Exception e)
+            {
+                return null;
+            }
+        }
     }
 }

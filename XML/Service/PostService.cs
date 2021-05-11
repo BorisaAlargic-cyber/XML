@@ -261,5 +261,79 @@ namespace XML.Service
                 return null;
             }
         }
+
+        public Favorites AddToFavorites(User currentUser,int postId)
+        {
+            try
+            {
+                using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    Favorites favorites = new Favorites();
+                    Post post = unitOfWork.Posts.Get(postId);
+
+                    favorites.User = currentUser;
+                    favorites.FavouritedPost = post;
+                    favorites.Favourited = true;
+
+                    unitOfWork.Favorites.Update(favorites);
+                    unitOfWork.Complete();
+
+                    return favorites;
+                }
+            }catch(Exception e)
+            {
+                return null;
+            }
+        }
+
+        public Favorites RemoveFromFavorites(User currentUser,int postId,int favId)
+        {
+            try
+            {
+                using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    Post post = unitOfWork.Posts.Get(postId);
+                    Favorites favorites = unitOfWork.Favorites.Get(favId);
+
+                    favorites.User = currentUser;
+                    favorites.FavouritedPost = post;
+                    favorites.Favourited = false;
+
+                    unitOfWork.Favorites.Update(favorites);
+                    unitOfWork.Complete();
+
+                    return favorites;
+                }
+            }catch(Exception e)
+            {
+                return null;
+            }
+        }
+
+        public PostCollection CreateCollection(AddNameToPostCollectionRequest addNameToPostCollectionRequest ,User currentUser)
+        {
+            try
+            {
+                using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    Post post = unitOfWork.Posts.Get(addNameToPostCollectionRequest.Id);
+                    PostCollection postCollection = new PostCollection();
+
+                    postCollection.Post = post;
+                    postCollection.User = currentUser;
+                    postCollection.Name = addNameToPostCollectionRequest.Name;
+
+
+                    unitOfWork.PostCollections.Update(postCollection);
+                    unitOfWork.Complete();
+
+                    return postCollection;
+
+                }
+            }catch(Exception e)
+            {
+                return null;
+            }
+        }
     }
 }

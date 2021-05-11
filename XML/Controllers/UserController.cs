@@ -41,6 +41,7 @@ namespace XML.Controllers
             return Ok(service.GetPublicProfiles(search));
         }
 
+        [Authorize]
         [HttpPost]
         [Route("/api/users")]
         public async Task<IActionResult> Register(User userData)
@@ -54,5 +55,10 @@ namespace XML.Controllers
 
             return Ok(user);
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("/api/users")]
+        public async Task<IActionResult> 
     }
 }
