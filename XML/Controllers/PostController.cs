@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ namespace XML.Controllers
         [HttpPost]
         [Route("/api/posts")]
         public async Task<IActionResult> PublishedPost(Post postData)
-        {
+        {   
             Post post = service.PublishPost(postData, GetCurrentUser());
 
             if (post == null)
@@ -97,10 +98,10 @@ namespace XML.Controllers
 
         [Authorize]
         [HttpPut]
-        [Route("/api/posts/like/{userId}/{postId}")]
-        public async Task<IActionResult> LikePost(int postId,int userId)
+        [Route("/api/posts/like/{postId}")]
+        public async Task<IActionResult> LikePost(int postId)
         {
-            Reaction reaction = service.Like(userId, postId);
+            Reaction reaction = service.Like(GetCurrentUser().Id, postId);
 
             if(reaction == null)
             {
@@ -111,10 +112,10 @@ namespace XML.Controllers
         }
         [Authorize]
         [HttpPut]
-        [Route("/api/posts/dislike/{userId}/{postId}")]
-        public async Task<IActionResult> DislikePost(int postId, int userId)
+        [Route("/api/posts/dislike/{postId}")]
+        public async Task<IActionResult> DislikePost(int postId)
         {
-            Reaction reaction = service.Like(userId, postId);
+            Reaction reaction = service.Dislike(GetCurrentUser().Id, postId);
 
             if (reaction == null)
             {
@@ -126,10 +127,10 @@ namespace XML.Controllers
 
         [Authorize]
         [HttpPut]
-        [Route("/api/posts/comment/id")]
-        public async Task<IActionResult> Comment(AddCommentToPostRequest addCommentToPostRequest ,User currentUser)
+        [Route("/api/posts/comment")]
+        public async Task<IActionResult> Comment(AddCommentToPostRequest addCommentToPostRequest)
         {
-            currentUser = GetCurrentUser();
+            User currentUser = GetCurrentUser();
 
             PostComment postComment = service.Comment(addCommentToPostRequest, currentUser);
 
@@ -144,9 +145,9 @@ namespace XML.Controllers
         [Authorize]
         [HttpPut]
         [Route("/api/posts/favourit/{id}")]
-        public async Task<IActionResult> AddToFavorites(User currentUser,int id)
+        public async Task<IActionResult> AddToFavorites(int id)
         {
-            currentUser = GetCurrentUser();
+             User currentUser = GetCurrentUser();
 
             Favorites favorites = service.AddToFavorites(currentUser, id);
 
@@ -161,9 +162,9 @@ namespace XML.Controllers
         [Authorize]
         [HttpPut]
         [Route("/api/posts/unfavorit/{postId}/{favId}")]
-        public async Task<IActionResult> RemoveFromFavorites(User currentUser,int postId,int favId)
+        public async Task<IActionResult> RemoveFromFavorites(int postId,int favId)
         {
-            currentUser = GetCurrentUser();
+           User currentUser = GetCurrentUser();
 
             Favorites favorites = service.RemoveFromFavorites(currentUser, postId,favId);
 
@@ -177,10 +178,10 @@ namespace XML.Controllers
 
         [Authorize]
         [HttpPut]
-        [Route("/api/posts/collection/{postId}/{favId}")]
-        public async Task<IActionResult> CreateCollection(AddNameToPostCollectionRequest addNameToPostCollectionRequest, User currentUser)
+        [Route("/api/posts/collection")]
+        public async Task<IActionResult> CreateCollection(AddNameToPostCollectionRequest addNameToPostCollectionRequest)
         {
-            currentUser = GetCurrentUser();
+           User currentUser = GetCurrentUser();
 
             PostCollection postCollection = service.CreateCollection(addNameToPostCollectionRequest, currentUser);
 
@@ -189,6 +190,34 @@ namespace XML.Controllers
                 return BadRequest();
             }
             return Ok(postCollection);
+        }
+
+        [HttpGet]
+        [Route("/api/posts/get-posts")]
+        public async Task<IActionResult> GetAllPosts()
+        {
+            IEnumerable<Post> post = service.GetAllPost();
+
+            if (post == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(post);
+        }
+
+        [HttpGet]
+        [Route("/api/posts/get-stories")]
+        public async Task<IActionResult> GetAllStories()
+        {
+            IEnumerable<Post> post = service.GetAllStories();
+
+            if (post == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(post);
         }
     }
 }

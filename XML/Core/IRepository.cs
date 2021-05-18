@@ -20,5 +20,6 @@ namespace XML.Core
         void RemoveRange(IEnumerable<TEntity> entities);
 
         void Update(TEntity entity);
+        void Detach(TEntity entity);
     }
 }

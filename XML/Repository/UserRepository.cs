@@ -15,9 +15,9 @@ namespace XML.Repository
             return XMLContext.Users.Where(x => x.Email == email).FirstOrDefault();
         }
 
-        public User GetUserWithEmailAndPassword(string email, string password)
+        public User GetUserWithUsernameAndPassword(string username, string password)
         {
-            return XMLContext.Users.Where(x => x.Email == email && x.Password == password).FirstOrDefault();
+            return XMLContext.Users.Where(x => x.Username == username && x.Password == password).FirstOrDefault();
         }
 
         public override PageResponse<User> GetPage(Pager pager)
@@ -34,6 +34,11 @@ namespace XML.Repository
             return XMLContext.Users.Where(x => (x.Email.ToLower().Contains(search) ||
             x.Username.ToLower().Contains(search) || x.FirstName.ToLower().Contains(search) ||
             x.LastName.ToLower().Contains(search)) && x.IsPrivate == false).ToList();
+        }
+
+        public User GetUserWithUsername(string username)
+        {
+            return XMLContext.Users.Where(x => x.Username == username).FirstOrDefault();
         }
     }
 }

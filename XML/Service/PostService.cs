@@ -21,14 +21,21 @@ namespace XML.Service
                 {
                     Post dbPost = new Post();
 
+                    User userDb = unitOfWork.Users.Get(user.Id);
+                    unitOfWork.Users.Detach(userDb);
+
                     dbPost.DateCreated = DateTime.Now;
                     dbPost.PostType = post.PostType;
-                    dbPost.User = user;
+                    
                     dbPost.Description = post.Description;
                     dbPost.Deleted = false;
                     dbPost.OnlyCloseFriend = post.OnlyCloseFriend;
 
-                    unitOfWork.Posts.Add(post);
+                    unitOfWork.Posts.Add(dbPost);
+                    unitOfWork.Complete();
+
+                    unitOfWork.Posts.Update(dbPost);
+                    dbPost.User = userDb;
                     unitOfWork.Complete();
 
                     return dbPost;
@@ -39,6 +46,53 @@ namespace XML.Service
             }
         }
 
+        public IEnumerable<Post> GetAllPost()
+        {
+            try
+            {
+                using (UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    IEnumerable<Post> posts = unitOfWork.Posts.GetAllPosts();
+
+                    if(posts == null)
+                    {
+                        return new List<Post>();
+                    }
+
+                    return posts;
+                    
+                }
+            }
+            catch (Exception e)
+            {
+                return new List<Post>();
+            }
+
+        }
+
+        public IEnumerable<Post> GetAllStories()
+        {
+            try
+            {
+                using (UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    IEnumerable<Post> posts = unitOfWork.Posts.GetAllStories();
+
+                    if (posts == null)
+                    {
+                        return new List<Post>();
+                    }
+
+                    return posts;
+
+                }
+            }
+            catch (Exception e)
+            {
+                return new List<Post>();
+            }
+
+        }
         public Post EditPost(Post post)
         {
             try
@@ -202,7 +256,7 @@ namespace XML.Service
                     reaction.Post = unitOfWork.Posts.Get(postId);
                     reaction.ReactionType = ReactionType.Like;
 
-                    unitOfWork.Reactions.Update(reaction);
+                    unitOfWork.Reactions.Add(reaction);
                     unitOfWork.Complete();
 
                     return reaction;
@@ -224,7 +278,7 @@ namespace XML.Service
                     reaction.Post = unitOfWork.Posts.Get(postId);
                     reaction.ReactionType = ReactionType.Dislike;
 
-                    unitOfWork.Reactions.Update(reaction);
+                    unitOfWork.Reactions.Add(reaction);
                     unitOfWork.Complete();
 
                     return reaction;

@@ -41,7 +41,6 @@ namespace XML.Controllers
             return Ok(service.GetPublicProfiles(search));
         }
 
-        [Authorize]
         [HttpPost]
         [Route("/api/users")]
         public async Task<IActionResult> Register(User userData)
@@ -58,7 +57,52 @@ namespace XML.Controllers
 
         [Authorize]
         [HttpPost]
-        [Route("/api/users")]
-        public async Task<IActionResult> 
+        [Route("/api/users/addClose/{closeFrinedId}")]
+        public async Task<IActionResult> AddToCloseFriends(int closeFriendId)
+        {
+           User currentUser = GetCurrentUser();
+            CloseFriends closeFriends = service.AddToCloseFriends(currentUser, closeFriendId);
+
+            if(closeFriends == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(closeFriends);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("/api/users/removeClose/{closeFriendId}")]
+        public async Task<IActionResult> RemoveFromCloseFriends( int closeFriendId)
+        {
+            
+            CloseFriends closeFriends = service.RemoveFromCloseFriends(closeFriendId);
+
+            if (closeFriends == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(closeFriends);
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("/api/users/edit")]
+        public async Task<IActionResult> EditUser(User userData)
+        {
+            User user = service.EditProfile(userData);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(user);
+        }
+
+
     }
 }

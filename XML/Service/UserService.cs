@@ -88,7 +88,7 @@ namespace XML.Service
             }
         }
 
-        public CloseFriends RemoveFromCloseFriends(int FriendId , int closeFriendId)
+        public CloseFriends RemoveFromCloseFriends( int closeFriendId)
         {
             try
             {

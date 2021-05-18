@@ -9,7 +9,9 @@ namespace XML.Core
 
         public User GetUserWithEmail(string email);
 
-        public User GetUserWithEmailAndPassword(string email, string password);
+        public User GetUserWithUsername(string username);
+
+        public User GetUserWithUsernameAndPassword(string username, string password);
 
         public List<User> GetPublicProfiles(string search);
     }

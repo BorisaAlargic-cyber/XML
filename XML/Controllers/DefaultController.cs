@@ -20,7 +20,7 @@ namespace XML.Controllers
 
         protected User GetCurrentUser()
         {
-            string email = HttpContext.User.Claims.FirstOrDefault(u => u.Type == "Email")?.Value;
+            string username = HttpContext.User.Claims.FirstOrDefault(u => u.Type == "Username")?.Value;
 
             User user = null;
 
@@ -28,7 +28,7 @@ namespace XML.Controllers
             {
                 using (var unitOfWork = new UnitOfWork(new XMLContext()))
                 {
-                    user = unitOfWork.Users.GetUserWithEmail(email);
+                    user = unitOfWork.Users.GetUserWithUsername(username);
                 }
             }
             catch (Exception e)

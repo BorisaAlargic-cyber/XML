@@ -3,7 +3,7 @@ namespace XML.Model
 {
     public enum PostType
     {
-        Story,
-        Post
+        Story = 0,
+        Post = 1
     }
 }

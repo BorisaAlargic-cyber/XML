@@ -25,7 +25,7 @@ namespace XML.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(User data)
         {
-            if (data == null || data.Email == null || data.Password == null)
+            if (data == null || data.Username == null || data.Password == null)
             {
                 return BadRequest();
             }
@@ -36,7 +36,7 @@ namespace XML.Controllers
             {
                 using (var unitOfWork = new UnitOfWork(new XMLContext()))
                 {
-                    user = unitOfWork.Users.GetUserWithEmailAndPassword(data.Email, data.Password);
+                    user = unitOfWork.Users.GetUserWithUsernameAndPassword(data.Username, data.Password);
                 }
 
             }
@@ -57,7 +57,8 @@ namespace XML.Controllers
                 new Claim("Id", user.Id.ToString()),
                 new Claim("FirstName", user.FirstName),
                 new Claim("LastName", user.LastName),
-                new Claim("Email", user.Email)
+                new Claim("Email", user.Email),
+                new Claim("Username", user.Username)
                 };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
