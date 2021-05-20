@@ -23,7 +23,7 @@ namespace XML.Controllers
         [Authorize]
         [HttpPost]
         [Route("/api/posts")]
-        public async Task<IActionResult> PublishedPost(Post postData)
+        public async Task<IActionResult> PublishedPost(AddPostRequest postData)
         {   
             Post post = service.PublishPost(postData, GetCurrentUser());
 
@@ -143,6 +143,21 @@ namespace XML.Controllers
         }
 
         [Authorize]
+        [HttpGet]
+        [Route("/api/posts/comment/{postId}")]
+        public async Task<IActionResult> GetComment(int postId)
+        {
+            List<PostComment> result = service.GetComments(postId);
+
+            if (result == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(result);
+        }
+
+        [Authorize]
         [HttpPut]
         [Route("/api/posts/favourit/{id}")]
         public async Task<IActionResult> AddToFavorites(int id)
@@ -219,5 +234,23 @@ namespace XML.Controllers
 
             return Ok(post);
         }
+
+        [HttpGet]
+        [Route("/api/posts/get-user-posts")]
+        public async Task<IActionResult> GetPostForUser()
+        {
+            User currentUser = GetCurrentUser();
+
+            List<Post> posts = service.GetPostsForUser(currentUser);
+
+            if(posts == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(posts);
+            
+        }
+
     }
 }

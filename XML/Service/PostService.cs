@@ -13,7 +13,7 @@ namespace XML.Service
         {
         }
 
-        public Post PublishPost(Post post , User user)
+        public Post PublishPost(AddPostRequest post , User user)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace XML.Service
                     
                     dbPost.Description = post.Description;
                     dbPost.Deleted = false;
-                    dbPost.OnlyCloseFriend = post.OnlyCloseFriend;
+                    dbPost.OnlyCloseFriend = post.OnlyCloseFirends;
 
                     unitOfWork.Posts.Add(dbPost);
                     unitOfWork.Complete();
@@ -38,9 +38,60 @@ namespace XML.Service
                     dbPost.User = userDb;
                     unitOfWork.Complete();
 
+                    Content content = new Content();
+                    content.FileContent = post.FileContent;
+                    content.ContentPost = dbPost;
+
+                    unitOfWork.Contents.Add(content);
+                    unitOfWork.Complete();
+
+                    Location location = unitOfWork.Locations.GetLocationWithName(post.Location);
+
+                    if (location == null)
+                    {
+                        location = new Location();
+                        location.Name = post.Location;
+                        location.Deleted = false;
+
+                        unitOfWork.Locations.Add(location);
+                        unitOfWork.Complete();
+                    }
+
+                    dbPost.Location = location;
+                    unitOfWork.Complete();
+
+
+                    string[] tags = post.Tags.Split(' ');
+
+                    foreach (string tag in tags)
+                    {
+                        if (tag == string.Empty)
+                        {
+                            continue;
+                        }
+
+                        Hashtag hashtag = unitOfWork.Hashtags.GetTagWithName(tag);
+
+                        if (hashtag == null)
+                        {
+                            hashtag = new Hashtag();
+                            hashtag.Name = tag;
+
+                            unitOfWork.Hashtags.Add(hashtag);
+                            unitOfWork.Complete();
+                        }
+
+                        PostTag postTag = new PostTag();
+                        postTag.Post = dbPost;
+                        postTag.Hashtag = hashtag;
+
+                        unitOfWork.PostTags.Add(postTag);
+                        unitOfWork.Complete();
+                    }
+
                     return dbPost;
                 }
-            }catch(Exception e)
+            } catch(Exception e)
             {
                 return null;
             }
@@ -251,12 +302,41 @@ namespace XML.Service
                 using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
                 {
                     Reaction reaction = new Reaction();
+                    Post post = unitOfWork.Posts.Get(postId);
+                    
 
                     reaction.User = unitOfWork.Users.Get(userId);
                     reaction.Post = unitOfWork.Posts.Get(postId);
                     reaction.ReactionType = ReactionType.Like;
-
+                    post.likeCount++;
                     unitOfWork.Reactions.Add(reaction);
+                    unitOfWork.Complete();
+
+                   
+
+                    return reaction;
+                }
+            }catch(Exception e)
+            {
+                return null;
+            }
+        }
+
+        public Reaction Dislike(int userId,int postId)
+        {
+            try
+            {
+                using (UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    Reaction reaction = new Reaction();
+                    Post post = unitOfWork.Posts.Get(postId);
+
+                    reaction.User = unitOfWork.Users.Get(userId);
+                    reaction.Post = unitOfWork.Posts.Get(postId);
+                    reaction.ReactionType = ReactionType.Dislike;
+                    post.dislikeCount++;
+                    unitOfWork.Reactions.Add(reaction);
+
                     unitOfWork.Complete();
 
                     return reaction;
@@ -266,24 +346,19 @@ namespace XML.Service
                 return null;
             }
         }
-        public Reaction Dislike(int userId,int postId)
+
+        public List<PostComment> GetComments(int postId)
         {
             try
             {
                 using (UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
                 {
-                    Reaction reaction = new Reaction();
+                    List<PostComment> comments = unitOfWork.PostComments.GetCommentsForPostId(postId);
 
-                    reaction.User = unitOfWork.Users.Get(userId);
-                    reaction.Post = unitOfWork.Posts.Get(postId);
-                    reaction.ReactionType = ReactionType.Dislike;
-
-                    unitOfWork.Reactions.Add(reaction);
-                    unitOfWork.Complete();
-
-                    return reaction;
+                    return comments;
                 }
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return null;
             }
@@ -296,15 +371,21 @@ namespace XML.Service
                 using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
                 {
                     Post post = unitOfWork.Posts.Get(addCommentToPostRequest.id);
-
-
-                    PostComment postComment = new PostComment();
                     
 
-                    postComment.User = currentUser;
+                    PostComment postComment = new PostComment();
+
                     postComment.Post = post;
                     postComment.Comment = addCommentToPostRequest.Comment;
+                    post.commentCount++;
 
+                    unitOfWork.PostComments.Add(postComment);
+
+                    unitOfWork.Complete();
+
+                    User user = unitOfWork.Users.Get(currentUser.Id);
+                    unitOfWork.Users.Detach(user);
+                    postComment.User = user;
                     unitOfWork.PostComments.Update(postComment);
                     unitOfWork.Complete();
 
@@ -388,6 +469,33 @@ namespace XML.Service
             {
                 return null;
             }
+
+            
+        }
+
+        public List<Post> GetPostsForUser(User currentUser)
+        {
+            try
+            {
+                using (UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    List<Post> posts = unitOfWork.Posts.GetAllPostsWithUserId(currentUser);
+
+                    if (posts == null)
+                    {
+                        return new List<Post>();
+                    }
+
+                    return posts;
+
+                }
+
+            }
+            catch (Exception e)
+            {
+                return new List<Post>();
+            }
+
         }
     }
 }

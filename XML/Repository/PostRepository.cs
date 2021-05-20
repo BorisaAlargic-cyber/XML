@@ -23,7 +23,14 @@ namespace XML.Repository
         }
         public List<Post> GetAllPosts()
         {
-            return XMLContext.Posts.Where(x => x.PostType == PostType.Post ).Include(x => x.User).ToList();
+            return XMLContext.Posts.Where(x => x.PostType == PostType.Post )
+                .Include(x => x.Location)
+                .Include(x => x.User).ToList();
+        }
+
+        public List<Post> GetAllPostsWithUserId(User user)
+        {
+            return XMLContext.Posts.Where(x => x.User == user ).Include(x => x.User).ToList();
         }
     }
 

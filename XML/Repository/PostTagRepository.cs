@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using XML.Core;
 using XML.Model;
 
@@ -12,7 +13,9 @@ namespace XML.Repository
 
         public List<PostTag> GetPostsWithTags(int id)
         {
-            return XMLContext.PostTags.Where(x => x.Hashtag.Id == id).ToList();
+            return XMLContext.PostTags.Include(x => x.Post)
+                .Include(x => x.Hashtag).Where(x => x.Post.Id == id)
+                .ToList();
         }
     }
 }

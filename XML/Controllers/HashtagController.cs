@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,21 @@ namespace XML.Controllers
 
         public HashtagController(IConfiguration config) : base(config)
         {
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("/api/hashtags/{postId}")]
+        public async Task<IActionResult> Get(int postId)
+        {
+            List<PostTag> tags = service.GetForPost(postId);
+
+            if (tags == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(tags);
         }
 
         [Authorize]

@@ -11,5 +11,9 @@ namespace XML.Core
         public List<Post> GetAllStories();
 
         public List<Post> GetAllPosts();
+
+        public List<Post> GetAllPostsWithUserId(User user);
+
+        
     }
 }

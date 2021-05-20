@@ -14,5 +14,7 @@ namespace XML.Core
         public User GetUserWithUsernameAndPassword(string username, string password);
 
         public List<User> GetPublicProfiles(string search);
+
+        
     }
 }

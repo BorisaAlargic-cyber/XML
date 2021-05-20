@@ -9,6 +9,9 @@ namespace XML.Model
         public bool OnlyCloseFriend { get; set; }
         public User User { get; set; }
         public Location Location { get; set; }
-
+        public int likeCount { get; set; }
+        public int dislikeCount { get; set; }
+        public int commentCount { get; set; }
+   
     }
 }
