@@ -114,7 +114,7 @@ namespace XML.Service
         {
             try
             {
-                using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                using (UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
                 {
                     User dbUser = unitOfWork.Users.GetUserWithEmail(user.Email);
 
@@ -133,7 +133,8 @@ namespace XML.Service
 
                     return dbUser;
                 }
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return null;
             }

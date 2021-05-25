@@ -22,6 +22,7 @@ namespace XML.Service
 
                     follower.UserFollowing = currentUser;
                     follower.UserFollowed = dbUserFollowed;
+                    follower.isedFollowing = true;
 
                     unitOfWork.Followers.Update(follower);
                     unitOfWork.Complete();
@@ -66,6 +67,47 @@ namespace XML.Service
                     unitOfWork.Complete();
 
                     return follower;
+                }
+            }catch(Exception e)
+            {
+                return null;
+            }
+        }
+
+        public Follower CheckFollowing(int followedId,User currentUser)
+        {
+            try
+            {
+                using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    Follower dbIsFollower = unitOfWork.Followers.isFollowing(currentUser.Id, followedId);
+
+                    return dbIsFollower;
+                    
+
+
+
+                }
+            }catch(Exception e)
+            {
+                return null;
+            }
+        }
+
+        public Follower UnFollow(User currentUser,int userFpllowedId)
+        {
+            try
+            {
+                using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    Follower dbFollower = unitOfWork.Followers.isFollowing(currentUser.Id,userFpllowedId);
+
+                    dbFollower.isedFollowing = false;
+
+                    unitOfWork.Followers.Update(dbFollower);
+                    unitOfWork.Complete();
+
+                    return dbFollower;
                 }
             }catch(Exception e)
             {

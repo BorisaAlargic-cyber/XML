@@ -406,9 +406,38 @@ namespace XML.Service
                     Favorites favorites = new Favorites();
                     Post post = unitOfWork.Posts.Get(postId);
 
-                    favorites.User = currentUser;
+                    User dbUser = unitOfWork.Users.Get(currentUser.Id);
+                    unitOfWork.Users.Detach(dbUser);
+
+                 
                     favorites.FavouritedPost = post;
                     favorites.Favourited = true;
+
+                    unitOfWork.Favorites.Add(favorites);
+                    unitOfWork.Complete();
+
+
+                    favorites.User = dbUser;
+                    unitOfWork.Complete();
+
+
+                    return favorites;
+                }
+            }catch(Exception e)
+            {
+                return null;
+            }
+        }
+
+        public Favorites RemoveFromFavorites(User currentUser,int postId)
+        {
+            try
+            {
+                using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
+                {
+                    Favorites favorites = unitOfWork.Favorites.GetFavoritesWithUserAndPost(currentUser.Id, postId);
+
+                    favorites.Favourited = false;
 
                     unitOfWork.Favorites.Update(favorites);
                     unitOfWork.Complete();
@@ -421,24 +450,17 @@ namespace XML.Service
             }
         }
 
-        public Favorites RemoveFromFavorites(User currentUser,int postId,int favId)
+        public Favorites GetFavorites(User currentUser, int postId)
         {
             try
             {
                 using(UnitOfWork unitOfWork = new UnitOfWork(new XMLContext()))
                 {
-                    Post post = unitOfWork.Posts.Get(postId);
-                    Favorites favorites = unitOfWork.Favorites.Get(favId);
+                    Favorites fav = unitOfWork.Favorites.GetFavoritesWithUserAndPost(currentUser.Id, postId);
 
-                    favorites.User = currentUser;
-                    favorites.FavouritedPost = post;
-                    favorites.Favourited = false;
-
-                    unitOfWork.Favorites.Update(favorites);
-                    unitOfWork.Complete();
-
-                    return favorites;
+                    return fav;
                 }
+
             }catch(Exception e)
             {
                 return null;

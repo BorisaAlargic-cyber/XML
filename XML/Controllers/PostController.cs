@@ -157,6 +157,7 @@ namespace XML.Controllers
             return Ok(result);
         }
 
+
         [Authorize]
         [HttpPut]
         [Route("/api/posts/favourit/{id}")]
@@ -176,12 +177,12 @@ namespace XML.Controllers
 
         [Authorize]
         [HttpPut]
-        [Route("/api/posts/unfavorit/{postId}/{favId}")]
-        public async Task<IActionResult> RemoveFromFavorites(int postId,int favId)
+        [Route("/api/posts/unfavorit/{postId}")]
+        public async Task<IActionResult> RemoveFromFavorites(int postId)
         {
            User currentUser = GetCurrentUser();
 
-            Favorites favorites = service.RemoveFromFavorites(currentUser, postId,favId);
+            Favorites favorites = service.RemoveFromFavorites(currentUser, postId);
 
             if (favorites == null)
             {
@@ -190,6 +191,7 @@ namespace XML.Controllers
 
             return Ok(favorites);
         }
+
 
         [Authorize]
         [HttpPut]
@@ -250,6 +252,23 @@ namespace XML.Controllers
 
             return Ok(posts);
             
+        }
+
+        [HttpGet]
+        [Route("/api/posts/get-fav-post/{postId}")]
+        public async Task<IActionResult> GetFavPosts(int postId)
+        {
+            User currentUser = GetCurrentUser();
+
+            Favorites favorites = service.GetFavorites(currentUser, postId);
+
+            if(favorites == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(favorites);
+
         }
 
     }

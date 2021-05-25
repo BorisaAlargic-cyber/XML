@@ -20,10 +20,11 @@ namespace XML.Controllers
 
         [Authorize]
         [HttpPut]
-        [Route("/api/follower/{id}")]
+        [Route("/api/follower/{userId}")]
         public async Task<IActionResult> Following(int userId)
         {
-            Follower follower = service.Following(userId, GetCurrentUser());
+            User currentUser = GetCurrentUser();
+            Follower follower = service.Following(userId, currentUser);
             if(follower == null)
             {
                 return BadRequest();
@@ -60,6 +61,27 @@ namespace XML.Controllers
                 return BadRequest();
             }
 
+            return Ok(follower);
+        }
+
+        [Authorize]
+        [HttpPut]
+        [Route("/api/follower/is-following/{id}")]
+        public async Task<IActionResult> CheckFollowing(int id)
+        {
+            User currentUser = GetCurrentUser();
+            Follower isFollowing = service.CheckFollowing(id, currentUser);
+
+            return Ok(isFollowing);
+        }
+
+        [Authorize]
+        [HttpPut]
+        [Route("/api/follower/un-follow/{id}")]
+        public async Task<IActionResult> UnFollow(int id)
+        {
+            User currentUser = GetCurrentUser();
+            Follower follower = service.UnFollow(currentUser, id);
             return Ok(follower);
         }
     }
